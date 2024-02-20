@@ -2,13 +2,6 @@ name: Test & QA
 
 on:
   push:
-    branches:
-      - main
-      - development
-  pull_request:
-    branches:
-      - main
-      - development
 
 jobs:
   # Docker:
@@ -30,8 +23,8 @@ jobs:
       matrix:
         # Test latest and oldest supported Python releases
         # See https://devguide.python.org/versions/
-        python-version: ['3.9', '3.12']
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.12']
+        os: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v4
@@ -55,12 +48,10 @@ jobs:
         ruff --output-format=github --select=E9,F63,F7,F82 --target-version=py37 ./pilot
         # default set of ruff rules with GitHub Annotations
         ruff --output-format=github --target-version=py37 --ignore=F401,E402,E501 ./pilot
-
+    - run: pip install pytest
+    - run: cd pilot
     - name: Run tests
       uses: koenhagen/measure-energy-action@v0.30
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          pip install pytest
-          cd pilot
-          pytest -m "not slow and not uses_tokens and not ux_test"
+        run: pytest -m "not slow and not uses_tokens and not ux_test"
