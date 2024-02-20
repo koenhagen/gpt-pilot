@@ -57,7 +57,10 @@ jobs:
         ruff --output-format=github --target-version=py37 --ignore=F401,E402,E501 ./pilot
 
     - name: Run tests
-      run: |
-        pip install pytest
-        cd pilot
-        pytest -m "not slow and not uses_tokens and not ux_test"
+      uses: koenhagen/measure-energy-action@v0.30
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pip install pytest
+          cd pilot
+          pytest -m "not slow and not uses_tokens and not ux_test"
